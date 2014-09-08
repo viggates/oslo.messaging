@@ -84,6 +84,8 @@ class MessageHandlingServer(object):
         self.transport = transport
         self.dispatcher = dispatcher
         self.executor = executor
+	#test
+	self.listener=None
 
         try:
             mgr = driver.DriverManager('oslo.messaging.executors',
@@ -113,11 +115,11 @@ class MessageHandlingServer(object):
         if self._executor is not None:
             return
         try:
-            listener = self.dispatcher._listen(self.transport)
+            self.listener = self.dispatcher._listen(self.transport)
         except driver_base.TransportDriverError as ex:
             raise ServerListenError(self.target, ex)
 
-        self._executor = self._executor_cls(self.conf, listener,
+        self._executor = self._executor_cls(self.conf, self.listener,
                                             self.dispatcher)
         self._executor.start()
 
@@ -130,6 +132,8 @@ class MessageHandlingServer(object):
         """
         if self._executor is not None:
             self._executor.stop()
+	    #test
+	    self.listener.conn.close()
 
     def wait(self):
         """Wait for message processing to complete.
